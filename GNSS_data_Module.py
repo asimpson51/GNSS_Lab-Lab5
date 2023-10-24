@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 import glob
 from scipy.stats import linregress
-
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
 
 def fit_timeseries(tlist, ylist):
     t = np.array(tlist)
@@ -84,5 +85,12 @@ def fit_all_velocities(folder, pattern, tname, ename, nname, uname, lat, lon, el
     
     return all_velocities_df
 
-    
-    
+def plot_velocity_map(df):
+    fig, ax = plt.subplots(subplot_kw={'projection': ccrs.PlateCarree()}, figsize=(10, 10))
+    ax.quiver(df['Lon'].values, df['Lat'].values, df['E-Velocity'], df['N-Velocity'],scale=0.015)
+    sc = ax.scatter(df['Lon'].values, df['Lat'].values, c=df['U-Velocity'], cmap='coolwarm')
+    cbar = plt.colorbar(sc, ax=ax, orientation='vertical', label='Upward Velocity (mm/year)')
+    ax.set_extent([-109, -106, 34, 39])
+    ax.gridlines(draw_labels=True)
+    ax.set_title('Velocity Map')
+    plt.show()
